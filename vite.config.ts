@@ -20,16 +20,20 @@ const dirname =
 const srcDir = path.resolve(__dirname, "src/components");
 
 const entries: Record<string, string> = {};
-fs.readdirSync(srcDir).forEach((file) => {
-  if (
-    file.endsWith(".tsx") &&
-    !file.includes(".stories.") &&
-    !file.includes(".test.")
-  ) {
-    const componentName = file.replace(".tsx", "");
-    entries[`components/${componentName}`] = path.join(srcDir, file);
-  }
-});
+
+// Check if components directory exists before reading
+if (fs.existsSync(srcDir)) {
+  fs.readdirSync(srcDir).forEach((file) => {
+    if (
+      file.endsWith(".tsx") &&
+      !file.includes(".stories.") &&
+      !file.includes(".test.")
+    ) {
+      const componentName = file.replace(".tsx", "");
+      entries[`components/${componentName}`] = path.join(srcDir, file);
+    }
+  });
+}
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
