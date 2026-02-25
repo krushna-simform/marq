@@ -20,15 +20,14 @@ const dirname =
 const srcDir = path.resolve(__dirname, "src/components");
 
 const entries: Record<string, string> = {};
-fs.readdirSync(srcDir).forEach((componentDir) => {
-  const componentDirPath = path.join(srcDir, componentDir);
-  const componentFilePath = path.join(componentDirPath, `${componentDir}.tsx`);
-
+fs.readdirSync(srcDir).forEach((file) => {
   if (
-    fs.statSync(componentDirPath).isDirectory() &&
-    fs.existsSync(componentFilePath)
+    file.endsWith(".tsx") &&
+    !file.includes(".stories.") &&
+    !file.includes(".test.")
   ) {
-    entries[`components/${componentDir}/${componentDir}`] = componentFilePath;
+    const componentName = file.replace(".tsx", "");
+    entries[`components/${componentName}`] = path.join(srcDir, file);
   }
 });
 
@@ -77,7 +76,10 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: entries,
+      entry: {
+        index: path.resolve(__dirname, "src/index.ts"),
+        ...entries,
+      },
       formats: ["es"],
     },
     rollupOptions: {
